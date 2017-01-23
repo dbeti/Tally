@@ -1,8 +1,9 @@
-﻿@{
+﻿@model IEnumerable<Tally.Models.ApplicationViewModels.Course>
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
+@*<div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
     <ol class="carousel-indicators">
         <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
         <li data-target="#myCarousel" data-slide-to="1"></li>
@@ -63,10 +64,10 @@
         <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
         <span class="sr-only">Next</span>
     </a>
-</div>
+</div>*@
 
 <div class="row">
-    <div class="col-md-3">
+    @*<div class="col-md-3">
         <h2>Application uses</h2>
         <ul>
             <li>Sample pages using ASP.NET Core MVC</li>
@@ -105,5 +106,7 @@
             <li><a href="http://go.microsoft.com/fwlink/?LinkID=517853">Run tools such as EF migrations and more</a></li>
             <li><a href="http://go.microsoft.com/fwlink/?LinkID=398609">Publish to Microsoft Azure Web Apps</a></li>
         </ul>
-    </div>
-</div>
+    </div>*@
+    @Html.Partial("~/Views/Courses/Index.cshtml")
+
+   </div>

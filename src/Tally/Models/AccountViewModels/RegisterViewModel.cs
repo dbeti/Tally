@@ -23,5 +23,14 @@ namespace Tally.Models.AccountViewModels
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [Required, Display(Name = "Occupation")]
+        public Roles Role { get; set; }
+
+        public enum Roles
+        {
+            Professor,
+            Student
+        }
     }
 }
