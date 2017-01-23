@@ -8,9 +8,10 @@ using Tally.Data;
 namespace Tally.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170123194424_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1")
@@ -209,28 +210,6 @@ namespace Tally.Data.Migrations
                     b.ToTable("CourseUser");
                 });
 
-            modelBuilder.Entity("Tally.Models.ApplicationViewModels.Lecture", b =>
-                {
-                    b.Property<int>("LectureId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int?>("CourseId");
-
-                    b.Property<string>("Description")
-                        .IsRequired();
-
-                    b.Property<DateTime>("StartDate");
-
-                    b.Property<string>("Title")
-                        .IsRequired();
-
-                    b.HasKey("LectureId");
-
-                    b.HasIndex("CourseId");
-
-                    b.ToTable("Lecture");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole")
@@ -285,13 +264,6 @@ namespace Tally.Data.Migrations
                     b.HasOne("Tally.Models.ApplicationUser", "User")
                         .WithMany("CourseUsers")
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("Tally.Models.ApplicationViewModels.Lecture", b =>
-                {
-                    b.HasOne("Tally.Models.ApplicationViewModels.Course", "Course")
-                        .WithMany("Lectures")
-                        .HasForeignKey("CourseId");
                 });
         }
     }

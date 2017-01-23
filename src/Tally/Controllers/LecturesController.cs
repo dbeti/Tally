@@ -10,22 +10,22 @@ using Tally.Models.ApplicationViewModels;
 
 namespace Tally.Controllers
 {
-    public class CoursesController : Controller
+    public class LecturesController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public CoursesController(ApplicationDbContext context)
+        public LecturesController(ApplicationDbContext context)
         {
             _context = context;    
         }
 
-        // GET: Courses
+        // GET: Lectures
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Course.ToListAsync());
+            return View(await _context.Lecture.ToListAsync());
         }
 
-        // GET: Courses/Details/5
+        // GET: Lectures/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,38 +33,41 @@ namespace Tally.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Course.Include(c => c.Lectures).SingleOrDefaultAsync(m => m.CourseId == id);
-            if (course == null)
+            var lecture = await _context.Lecture.SingleOrDefaultAsync(m => m.LectureId == id);
+            if (lecture == null)
             {
                 return NotFound();
             }
 
-            return View(course);
+            return View(lecture);
         }
 
-        // GET: Courses/Create
-        public IActionResult Create()
+        // GET: Lectures/Create
+        public IActionResult Create(int id)
         {
-            return View();
+            var lecture = new Lecture();
+            lecture.Course = _context.Course.FirstOrDefault(c => c.CourseId == id);
+            return View(lecture);
         }
 
-        // POST: Courses/Create
+        // POST: Lectures/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CourseId,Description,Name")] Course course)
+        public async Task<IActionResult> Create([Bind("LectureId,Description,StartDate,Title,Course")] Lecture lecture, int id)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(course);
+                lecture.Course = _context.Course.FirstOrDefault(c => c.CourseId == id);
+                _context.Add(lecture);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            return View(course);
+            return View(lecture);
         }
 
-        // GET: Courses/Edit/5
+        // GET: Lectures/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -72,22 +75,22 @@ namespace Tally.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Course.SingleOrDefaultAsync(m => m.CourseId == id);
-            if (course == null)
+            var lecture = await _context.Lecture.SingleOrDefaultAsync(m => m.LectureId == id);
+            if (lecture == null)
             {
                 return NotFound();
             }
-            return View(course);
+            return View(lecture);
         }
 
-        // POST: Courses/Edit/5
+        // POST: Lectures/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CourseId,Description,Name")] Course course)
+        public async Task<IActionResult> Edit(int id, [Bind("LectureId,Description,StartDate,Title")] Lecture lecture)
         {
-            if (id != course.CourseId)
+            if (id != lecture.LectureId)
             {
                 return NotFound();
             }
@@ -96,12 +99,12 @@ namespace Tally.Controllers
             {
                 try
                 {
-                    _context.Update(course);
+                    _context.Update(lecture);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CourseExists(course.CourseId))
+                    if (!LectureExists(lecture.LectureId))
                     {
                         return NotFound();
                     }
@@ -112,10 +115,10 @@ namespace Tally.Controllers
                 }
                 return RedirectToAction("Index");
             }
-            return View(course);
+            return View(lecture);
         }
 
-        // GET: Courses/Delete/5
+        // GET: Lectures/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -123,29 +126,29 @@ namespace Tally.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Course.SingleOrDefaultAsync(m => m.CourseId == id);
-            if (course == null)
+            var lecture = await _context.Lecture.SingleOrDefaultAsync(m => m.LectureId == id);
+            if (lecture == null)
             {
                 return NotFound();
             }
 
-            return View(course);
+            return View(lecture);
         }
 
-        // POST: Courses/Delete/5
+        // POST: Lectures/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var course = await _context.Course.SingleOrDefaultAsync(m => m.CourseId == id);
-            _context.Course.Remove(course);
+            var lecture = await _context.Lecture.SingleOrDefaultAsync(m => m.LectureId == id);
+            _context.Lecture.Remove(lecture);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
-        private bool CourseExists(int id)
+        private bool LectureExists(int id)
         {
-            return _context.Course.Any(e => e.CourseId == id);
+            return _context.Lecture.Any(e => e.LectureId == id);
         }
     }
 }

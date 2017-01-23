@@ -6,19 +6,20 @@ using System.Threading.Tasks;
 
 namespace Tally.Models.ApplicationViewModels
 {
-    public class Course
+    public class Lecture
     {
         [Required]
-        public int CourseId { get; set; }
+        public int LectureId { get; set; }
 
         [Required]
-        public string Name { get; set; }
+        public string Title { get; set; }
 
         [Required]
         public string Description { get; set; }
 
-        public ICollection<ApplicationUser> Users { get; set; }
+        [Required]
+        public DateTime StartDate { get; set; }
 
-        public ICollection<Lecture> Lectures { get; set; }
+        public Course Course { get; set; }
     }
 }

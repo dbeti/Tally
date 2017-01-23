@@ -35,12 +35,12 @@
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.CourseId">Details</a> 
+                    <a asp-action="Details" asp-controller="Courses" asp-route-id="@item.CourseId">Details</a> 
                     @if (User.IsInRole("Professor"))
                     {
                         @:|
-                        <a asp-action="Edit" asp-route-id="@item.CourseId">Edit</a> @:|
-                        <a asp-action="Delete" asp-route-id="@item.CourseId">Delete</a>
+                        <a asp-action="Edit" asp-controller="Courses" asp-route-id="@item.CourseId">Edit</a> @:|
+                        <a asp-action="Delete" asp-controller="Courses" asp-route-id="@item.CourseId">Delete</a>
                     }
                 </td>
             </tr>

@@ -1,14 +1,13 @@
-@model Tally.Models.ApplicationViewModels.Course
+@model Tally.Models.ApplicationViewModels.Lecture
 
 @{
     ViewData["Title"] = "Create";
 }
 
-<h2>Create</h2>
 
-<form asp-controller="Courses" asp-action="Create">
+<form asp-action="Create" asp-route-id="@Model.Course.CourseId">
     <div class="form-horizontal">
-        <h4>Course</h4>
+        <h4>Lecture</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group">
@@ -19,10 +18,17 @@
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="Name" class="col-md-2 control-label"></label>
+            <label asp-for="StartDate" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger" />
+                <input asp-for="StartDate" class="form-control" />
+                <span asp-validation-for="StartDate" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Title" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger" />
             </div>
         </div>
         
@@ -33,6 +39,10 @@
         </div>
     </div>
 </form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
