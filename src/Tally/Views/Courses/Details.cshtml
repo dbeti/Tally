@@ -23,26 +23,37 @@
             @Html.DisplayFor(model => model.Name)
         </dd>
     </dl>
-
-    @if (Model.Lectures != null) {
+    <ul class="list-group">
+        @if (Model.Users != null)
+        {
+            foreach (var user in Model.Users)
+            {
+            <li class="list-group-item">
+                @user.UserName
+            </li>
+            }
+        }
+    </ul>
+    @if (Model.Lectures != null)
+    {
         foreach (var item in Model.Lectures)
         {
-        <ul class="list-group">
-            <li class="list-inline">
-                @Html.DisplayFor(modelItem => item.Description)
-            </li>
-            <li class="list-inline">
-                @Html.DisplayFor(modelItem => item.StartDate)
-            </li>
-            <li class="list-inline">
-                @Html.DisplayFor(modelItem => item.Title)
-            </li>
-            <li class="list-inline">
-                <a asp-action="Edit" asp-controller="Lectures" asp-route-id="@item.LectureId">Edit</a> |
-                <a asp-action="Details" asp-controller="Lectures" asp-route-id="@item.LectureId">Details</a> |
-                <a asp-action="Delete" asp-controller="Lectures" asp-route-id="@item.LectureId">Delete</a>
-            </li>
-        </ul>
+            <ul class="list-group">
+                <li class="list-inline">
+                    @Html.DisplayFor(modelItem => item.Description)
+                </li>
+                <li class="list-inline">
+                    @Html.DisplayFor(modelItem => item.StartDate)
+                </li>
+                <li class="list-inline">
+                    @Html.DisplayFor(modelItem => item.Title)
+                </li>
+                <li class="list-inline">
+                    <a asp-action="Edit" asp-controller="Lectures" asp-route-id="@item.LectureId">Edit</a> |
+                    <a asp-action="Details" asp-controller="Lectures" asp-route-id="@item.LectureId">Details</a> |
+                    <a asp-action="Delete" asp-controller="Lectures" asp-route-id="@item.LectureId">Delete</a>
+                </li>
+            </ul>
         }
     }
     <a asp-action="Create" asp-controller="Lectures" asp-route-id="@Model.CourseId">Create new lecture</a>

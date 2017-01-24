@@ -1,7 +1,8 @@
 @model Tally.Models.ApplicationViewModels.Lecture
-
+@inject UserManager<ApplicationUser> UserManager
 @{
     ViewData["Title"] = "Details";
+    var current = UserManager.GetUserId(User);
 }
 
 <div>
@@ -27,6 +28,23 @@
             @Html.DisplayFor(model => model.Title)
         </dd>
     </dl>
+</div>
+<div>
+    <ul class="list-group">
+        @foreach (var user in Model.Course.Users)
+        {
+            <li class="list-group-item">
+                <form>
+                    @user.UserName
+                    @if (user.Id == current)
+                    {
+                    <input type="text" class="form-control" />
+                    <input type="submit" class="btn btn-default" value="Save"/>
+                    }
+                </form>
+            </li>
+        }
+    </ul>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model.LectureId">Edit</a> |

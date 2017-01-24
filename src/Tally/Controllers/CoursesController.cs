@@ -7,22 +7,26 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Tally.Data;
 using Tally.Models.ApplicationViewModels;
+using Microsoft.AspNetCore.Identity;
+using Tally.Models;
 
 namespace Tally.Controllers
 {
     public class CoursesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public CoursesController(ApplicationDbContext context)
+        public CoursesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
-            _context = context;    
+            _context = context;
+            _userManager = userManager; 
         }
 
         // GET: Courses
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Course.ToListAsync());
+            return View(await _context.Course.Include(c => c.Users).ToListAsync());
         }
 
         // GET: Courses/Details/5
@@ -33,7 +37,7 @@ namespace Tally.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Course.Include(c => c.Lectures).SingleOrDefaultAsync(m => m.CourseId == id);
+            var course = await _context.Course.Include(c => c.Lectures).Include(c => c.Users).SingleOrDefaultAsync(m => m.CourseId == id);
             if (course == null)
             {
                 return NotFound();
@@ -59,9 +63,21 @@ namespace Tally.Controllers
             {
                 _context.Add(course);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Home");
             }
             return View(course);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Enroll(int id)
+        {
+            var course = _context.Course.Include(c => c.Users).FirstOrDefault(c => c.CourseId == id);
+            var current = await _userManager.GetUserAsync(User);
+
+            course.Users.Add(current);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Home");
         }
 
         // GET: Courses/Edit/5

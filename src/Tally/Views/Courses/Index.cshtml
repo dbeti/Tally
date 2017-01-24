@@ -1,7 +1,8 @@
 @model IEnumerable<Tally.Models.ApplicationViewModels.Course>
-
+@inject UserManager<ApplicationUser> UserManager
 @{
     ViewData["Title"] = "Index";
+    var id = UserManager.GetUserId(User);
 }
 
 <h2>Index</h2>
@@ -35,7 +36,13 @@
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
-                    <a asp-action="Details" asp-controller="Courses" asp-route-id="@item.CourseId">Details</a> 
+                    @if (User.IsInRole("Student") && !item.Users.Any(u => u.Id == id))
+                    {
+                        <form asp-action="Enroll" asp-controller="Courses" asp-route-id="@item.CourseId">
+                            <input type="submit" value="Enroll" class="btn btn-default" />
+                        </form>
+                    }
+                    <a asp-action="Details" asp-controller="Courses" asp-route-id="@item.CourseId">Details</a>
                     @if (User.IsInRole("Professor"))
                     {
                         @:|

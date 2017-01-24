@@ -33,7 +33,7 @@ namespace Tally.Controllers
                 return NotFound();
             }
 
-            var lecture = await _context.Lecture.SingleOrDefaultAsync(m => m.LectureId == id);
+            var lecture = await _context.Lecture.Include(l => l.Course).Include(l => l.Course.Users).SingleOrDefaultAsync(m => m.LectureId == id);
             if (lecture == null)
             {
                 return NotFound();
@@ -62,7 +62,7 @@ namespace Tally.Controllers
                 lecture.Course = _context.Course.FirstOrDefault(c => c.CourseId == id);
                 _context.Add(lecture);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return RedirectToAction("Details", "Courses", new { id = id });
             }
             return View(lecture);
         }

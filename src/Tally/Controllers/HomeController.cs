@@ -18,7 +18,7 @@ namespace Tally.Controllers
         } 
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Course.ToListAsync());
+            return View(await _context.Course.Include(c => c.Users).ToListAsync());
         }
 
         public IActionResult About()
