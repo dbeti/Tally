@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Tally.Models.AccountViewModels
+namespace Tally.Models
 {
     public class LoginViewModel
     {

@@ -1,64 +1,65 @@
-@model Tally.Models.ApplicationViewModels.Course
+@model Tally.Models.Course
 
 @{
     ViewData["Title"] = "Details";
+    var users = (List<ApplicationUser>)ViewData["Users"];
 }
 
-<h2>Details</h2>
+<div class='page-header'>
+    @if (User.IsInRole("Professor"))
+    {
+        <div class='btn-toolbar pull-right'>
+            <div class='btn-group'>
+                <a class="btn btn-primary" asp-action="Create" asp-controller="Lectures" asp-route-id="@Model.CourseId">Create <span class="glyphicon glyphicon-plus"></span></a>
+            </div>
+        </div>
+    }
 
-<div>
-    <h4>Course</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-    </dl>
-    <ul class="list-group">
-        @if (Model.Users != null)
+    <h2>@Html.DisplayFor(model => model.Name) <small><em>@Model.Professor.FirstName @Model.Professor.LastName</em></small></h2>
+    <p class="text-justify">@Html.DisplayFor(model => model.Description)</p>
+</div>
+
+
+<h4>Students</h4>
+<div class="list-group">
+    @if (users != null)
+    {
+        foreach (var user in users)
         {
-            foreach (var user in Model.Users)
+            @if (User.IsInRole("Professor"))
+                    {
+                <a class="list-group-item" asp-action="Details" asp-controller="Signatures" asp-route-student="@(user.Id)" asp-route-course="@(Model.CourseId)">@user.FirstName @user.LastName <em>@user.Email</em></a>
+            }
+            else
             {
-            <li class="list-group-item">
-                @user.UserName
-            </li>
+                <span class="list-group-item">@user.Email</span>
             }
         }
-    </ul>
+    }
+</div>
+<h4>Lectures</h4>
+<div class="row">
     @if (Model.Lectures != null)
     {
         foreach (var item in Model.Lectures)
         {
-            <ul class="list-group">
-                <li class="list-inline">
-                    @Html.DisplayFor(modelItem => item.Description)
-                </li>
-                <li class="list-inline">
-                    @Html.DisplayFor(modelItem => item.StartDate)
-                </li>
-                <li class="list-inline">
-                    @Html.DisplayFor(modelItem => item.Title)
-                </li>
-                <li class="list-inline">
-                    <a asp-action="Edit" asp-controller="Lectures" asp-route-id="@item.LectureId">Edit</a> |
-                    <a asp-action="Details" asp-controller="Lectures" asp-route-id="@item.LectureId">Details</a> |
-                    <a asp-action="Delete" asp-controller="Lectures" asp-route-id="@item.LectureId">Delete</a>
-                </li>
-            </ul>
+            <div class="col-xs-18 col-sm-6 col-md-4">
+                <div class="thumbnail">
+                    <div class="caption">
+                        <h4>@Html.DisplayFor(modelItem => item.Title)</h4>
+                        <h6>@Html.DisplayFor(modelItem => item.StartDate)</h6>
+                        <p class="text-justify">@Html.DisplayFor(modelItem => item.Description)</p>
+                        <a class="btn btn-default btn-xs" role="button" asp-action="Details" asp-controller="Lectures" asp-route-id="@item.LectureId"><i class="glyphicon glyphicon-search"></i></a>
+                        @if (User.IsInRole("Professor"))
+                    {
+                            <a class="btn btn-info btn-xs" role="button" asp-action="Edit" asp-controller="Lectures" asp-route-id="@item.LectureId"><i class="glyphicon glyphicon-pencil"></i></a>
+                            <a class="btn btn-danger btn-xs pull-right" asp-action="Delete" asp-controller="Lectures" asp-route-id="@item.LectureId"><i class="glyphicon glyphicon-trash"></i></a>
+                        }
+                    </div>
+                </div>
+            </div>
         }
     }
-    <a asp-action="Create" asp-controller="Lectures" asp-route-id="@Model.CourseId">Create new lecture</a>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.CourseId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<a asp-action="Index" asp-controller="Home">Back to courses</a>

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Tally.Models.ApplicationViewModels
+namespace Tally.Models
 {
     public class Course
     {
@@ -17,8 +17,10 @@ namespace Tally.Models.ApplicationViewModels
         [Required]
         public string Description { get; set; }
 
-        public ICollection<ApplicationUser> Users { get; set; }
+        public virtual ApplicationUser Professor { get; set; }
 
-        public ICollection<Lecture> Lectures { get; set; }
+        public virtual ICollection<CourseUser> CourseUsers { get; set; }
+
+        public virtual ICollection<Lecture> Lectures { get; set; }
     }
 }

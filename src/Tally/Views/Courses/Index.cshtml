@@ -1,56 +1,46 @@
-@model IEnumerable<Tally.Models.ApplicationViewModels.Course>
+@model IEnumerable<Tally.Models.Course>
 @inject UserManager<ApplicationUser> UserManager
 @{
     ViewData["Title"] = "Index";
     var id = UserManager.GetUserId(User);
 }
 
-<h2>Index</h2>
-
-<p>
+<div class='page-header'>
     @if (User.IsInRole("Professor"))
     {
-        <a asp-controller="Courses" asp-action="Create">Create New</a>
+        <div class='btn-toolbar pull-right'>
+            <div class='btn-group'>
+                <a class="btn btn-primary" asp-controller="Courses" asp-action="Create">Create <span class="glyphicon glyphicon-plus"></span></a>
+            </div>
+        </div>
     }
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @if (User.IsInRole("Student") && !item.Users.Any(u => u.Id == id))
+    <h2>Courses</h2>
+</div>
+
+<ul class="list-group">
+    @foreach (var item in Model)
+    {
+        <li class="list-group-item clearfix">
+            <span>@item.Name <small><em>@item.Professor.FirstName @item.Professor.LastName</em></small></span>
+            <div class="btn-toolbar pull-right">
+                <div class="btn-group">
+                    @if (User.IsInRole("Student") && !item.CourseUsers.Any(u => u.Id == id))
                     {
                         <form asp-action="Enroll" asp-controller="Courses" asp-route-id="@item.CourseId">
-                            <input type="submit" value="Enroll" class="btn btn-default" />
+                            <input type="submit" value="Enroll" class="btn btn-info" />
                         </form>
                     }
-                    <a asp-action="Details" asp-controller="Courses" asp-route-id="@item.CourseId">Details</a>
+                    else
+                    {
+                        <a class="btn btn-secondary" asp-action="Details" asp-controller="Courses" asp-route-id="@item.CourseId"><span class="glyphicon glyphicon-search"></span></a>
+                    }
                     @if (User.IsInRole("Professor"))
                     {
-                        @:|
-                        <a asp-action="Edit" asp-controller="Courses" asp-route-id="@item.CourseId">Edit</a> @:|
-                        <a asp-action="Delete" asp-controller="Courses" asp-route-id="@item.CourseId">Delete</a>
+                        <a class="btn btn-secondary" asp-action="Edit" asp-controller="Courses" asp-route-id="@item.CourseId"><span class="glyphicon glyphicon-pencil"></span></a>
+                        <a class="btn btn-secondary" asp-action="Delete" asp-controller="Courses" asp-route-id="@item.CourseId"><span class="glyphicon glyphicon-trash"></span></a>
                     }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                </div>
+            </div>
+        </li>
+    }
+</ul>

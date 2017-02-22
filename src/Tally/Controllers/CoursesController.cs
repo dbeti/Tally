@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Tally.Data;
-using Tally.Models.ApplicationViewModels;
 using Microsoft.AspNetCore.Identity;
 using Tally.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Tally.Controllers
 {
@@ -26,7 +26,7 @@ namespace Tally.Controllers
         // GET: Courses
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Course.Include(c => c.Users).ToListAsync());
+            return View(await _context.Course.Include(c => c.Professor).Include(c => c.CourseUsers).ToListAsync());
         }
 
         // GET: Courses/Details/5
@@ -36,8 +36,8 @@ namespace Tally.Controllers
             {
                 return NotFound();
             }
-
-            var course = await _context.Course.Include(c => c.Lectures).Include(c => c.Users).SingleOrDefaultAsync(m => m.CourseId == id);
+            ViewData["Users"] = _context.CourseUser.Include(cu => cu.User).Include(cu => cu.Course).Where(cu => cu.CourseId == id).Select(cu => cu.User).ToList();
+            var course = await _context.Course.Include(c => c.Professor).Include(c => c.Lectures).Include(c => c.CourseUsers).SingleOrDefaultAsync(m => m.CourseId == id);
             if (course == null)
             {
                 return NotFound();
@@ -47,7 +47,8 @@ namespace Tally.Controllers
         }
 
         // GET: Courses/Create
-        public IActionResult Create()
+        [Authorize(Roles="Professor")]
+        public async Task<IActionResult> Create()
         {
             return View();
         }
@@ -56,11 +57,13 @@ namespace Tally.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Roles = "Professor")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CourseId,Description,Name")] Course course)
+        public async Task<IActionResult> Create([Bind("CourseId,Description,Name,Professor")] Course course)
         {
             if (ModelState.IsValid)
             {
+                course.Professor = await _userManager.GetUserAsync(User);
                 _context.Add(course);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index", "Home");
@@ -71,16 +74,17 @@ namespace Tally.Controllers
         [HttpPost]
         public async Task<IActionResult> Enroll(int id)
         {
-            var course = _context.Course.Include(c => c.Users).FirstOrDefault(c => c.CourseId == id);
+            var course = _context.Course.Include(c => c.CourseUsers).FirstOrDefault(c => c.CourseId == id);
             var current = await _userManager.GetUserAsync(User);
 
-            course.Users.Add(current);
+            course.CourseUsers.Add(new CourseUser() { User = current, Course = course });
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index", "Home");
         }
 
         // GET: Courses/Edit/5
+        [Authorize(Roles = "Professor")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -100,6 +104,7 @@ namespace Tally.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Roles = "Professor")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("CourseId,Description,Name")] Course course)
         {
@@ -132,6 +137,7 @@ namespace Tally.Controllers
         }
 
         // GET: Courses/Delete/5
+        [Authorize(Roles = "Professor")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -150,6 +156,7 @@ namespace Tally.Controllers
 
         // POST: Courses/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Professor")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

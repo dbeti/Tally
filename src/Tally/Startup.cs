@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Tally.Data;
 using Tally.Models;
-using Tally.Services;
+using System.Globalization;
 
 namespace Tally
 {
@@ -20,7 +20,8 @@ namespace Tally
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath).AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddJsonFile("config.json", optional: true, reloadOnChange: true);
 
             if (env.IsDevelopment())
             {
@@ -64,16 +65,21 @@ namespace Tally
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddMvc();
+            services.AddOptions();
+            services.Configure<Config>(Configuration.GetSection("MicrosoftAzureStorage"));
 
-            // Add application services.
-            services.AddTransient<IEmailSender, AuthMessageSender>();
-            services.AddTransient<ISmsSender, AuthMessageSender>();
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            var cultureInfo = new CultureInfo("hr-Hr");
+            cultureInfo.NumberFormat.CurrencySymbol = "€";
+
+            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
@@ -103,7 +109,12 @@ namespace Tally
 
 
             // Seed data
-            RolesData.SeedRoles(app.ApplicationServices).Wait();
+            Data.Data.Seed(app.ApplicationServices).Wait();
         }
+    }
+
+    public class Config
+    {
+        public String AzureStorageConnectionString { get; set; }
     }
 }

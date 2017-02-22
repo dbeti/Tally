@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Tally.Models.ApplicationViewModels
+namespace Tally.Models
 {
     public class Lecture
     {
@@ -17,9 +17,10 @@ namespace Tally.Models.ApplicationViewModels
         [Required]
         public string Description { get; set; }
 
-        [Required]
+        [Required, Display(Name = "Start at")]
         public DateTime StartDate { get; set; }
 
-        public Course Course { get; set; }
+        [Required]
+        public virtual Course Course { get; set; }
     }
 }

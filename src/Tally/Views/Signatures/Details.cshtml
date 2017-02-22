@@ -1,0 +1,26 @@
+﻿@model List<Tally.Models.Signature>
+
+@{
+    ViewData["Title"] = "Details";
+    var user = (ApplicationUser)ViewData["Student"];
+}
+
+<div class='page-header'>
+    <h4>Signatures of @user.FirstName @user.LastName <em>@user.Email</em></h4>
+</div>
+
+<div>
+    <ul class="list-group">
+        @foreach (var signature in Model)
+        {
+            <li class="list-group-item">
+                <span>@signature.Lecture.Title</span>
+                <div class="form-control" style="height: 100px;">
+                    <img src="@signature.Location" style="max-width: 100%; height: 100%;" />
+                </div>
+            </li>
+        }
+    </ul>
+</div>
+
+<a asp-action="Details" asp-controller="Courses" asp-route-id="@((int)ViewData["CourseId"])">Back to course details</a>

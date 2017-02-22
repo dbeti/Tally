@@ -1,52 +1,111 @@
-@model Tally.Models.ApplicationViewModels.Lecture
-@inject UserManager<ApplicationUser> UserManager
+@model Tally.Models.Lecture
 @{
     ViewData["Title"] = "Details";
-    var current = UserManager.GetUserId(User);
+    var current = (string)ViewData["UserId"];
+    var signatures = new List<Tally.Models.Signature>();
+    if (User.IsInRole("Professor"))
+    {
+        signatures = (List<Tally.Models.Signature>)ViewData["Signatures"];
+    }
+    var users = (List<ApplicationUser>)ViewData["Users"];
 }
 
-<div>
-    <h4>Lecture</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.StartDate)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.StartDate)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-    </dl>
+<div class='page-header'>
+    <h4>@Html.DisplayFor(model => model.Title) <small>@Html.DisplayFor(model => model.StartDate)</small></h4>
+    <p class="text-justify">@Html.DisplayFor(model => model.Description)</p>
 </div>
+
+<h4>Signatures</h4>
+<ul class="list-group">
+    @foreach (var user in users)
+    {
+        <li class="list-group-item">
+            <form>
+                @user.UserName
+                @if (user.Id == current)
+                {
+                    <div data-toggle="modal" data-target="#modal" class="form-control" style="height: 100px;">
+                        <img id="placeholder" style="max-width: 100%; height: 100%;" src="@(ViewData["Location"])" />
+                    </div>
+                }
+                @if (User.IsInRole("Professor"))
+                {
+                    <div class="form-control" style="height: 100px;">
+                        <img id="placeholder" style="max-width: 100%; height: 100%;" src="@(signatures.FirstOrDefault(s => s.Student.Id == user.Id)?.Location)" />
+                    </div>
+                }
+            </form>
+        </li>
+    }
+</ul>
 <div>
-    <ul class="list-group">
-        @foreach (var user in Model.Course.Users)
-        {
-            <li class="list-group-item">
-                <form>
-                    @user.UserName
-                    @if (user.Id == current)
-                    {
-                    <input type="text" class="form-control" />
-                    <input type="submit" class="btn btn-default" value="Save"/>
-                    }
-                </form>
-            </li>
+    <a asp-action="Details" asp-controller="Courses" asp-route-id="@(Model.Course.CourseId)">Back to course details</a>
+</div>
+
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="modalLabel">Please sign</h4>
+            </div>
+            <div class="modal-body" id="canvas">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="close" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default" id="clear">Clear</button>
+                <button type="button" class="btn btn-primary" id="save">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.7/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.7/addons/p5.dom.min.js"></script>
+
+    <script>
+        var img = null;
+        function setup() {
+            var canvas = createCanvas(100, 100);
+            canvas.parent('canvas');
+            strokeWeight(5);
+            stroke(0);
         }
-    </ul>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.LectureId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+        function windowResized() {
+            resizeCanvas($("#canvas").width(), 100);
+        };
+        function touchMoved() {
+            line(mouseX, mouseY, pmouseX, pmouseY);
+            return true;
+        }
+        $('#modal').on('shown.bs.modal', function (e) {
+            resizeCanvas($("#canvas").width(), 100);
+            clear();
+        })
+        $('#save').on('click', function (e) {
+            img = canvas.getContext("2d").getImageData(0, 0, $("#canvas").width(), 100);
+            $('#placeholder')[0].src = canvas.toDataURL("image/png");
+
+            $.ajax({
+                method: "POST",
+                url: "/Signatures/Post",
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    img: $('#placeholder')[0].src,
+                    lecture: @Model.LectureId,
+                    student: '@current'
+                })
+            }).done(function (msg) {
+                $('#modal').modal('hide');
+            });
+        });
+        $('#close').on('click', function (e) {
+            clear();
+        });
+        $('#clear').on('click', function (e) {
+            img = null;
+            clear();
+        });
+
+        </script>
+
+}

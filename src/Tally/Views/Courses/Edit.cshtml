@@ -1,4 +1,4 @@
-@model Tally.Models.ApplicationViewModels.Course
+@model Tally.Models.Course
 
 @{
     ViewData["Title"] = "Edit";
@@ -15,7 +15,7 @@
         <div class="form-group">
             <label asp-for="Description" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="Description" class="form-control" />
+                <textarea rows="10" asp-for="Description" class="form-control"></textarea>
                 <span asp-validation-for="Description" class="text-danger" />
             </div>
         </div>
@@ -35,7 +35,7 @@
 </form>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" asp-controller="Home">Back to List</a>
 </div>
 
 @section Scripts {
