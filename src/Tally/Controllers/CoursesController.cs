@@ -24,12 +24,14 @@ namespace Tally.Controllers
         }
 
         // GET: Courses
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Course.Include(c => c.Professor).Include(c => c.CourseUsers).ToListAsync());
         }
 
         // GET: Courses/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
