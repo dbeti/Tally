@@ -23,13 +23,6 @@ namespace Tally.Controllers
             _userManager = userManager; 
         }
 
-        // GET: Courses
-        [Authorize]
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Course.Include(c => c.Professor).Include(c => c.CourseUsers).ToListAsync());
-        }
-
         // GET: Courses/Details/5
         [Authorize]
         public async Task<IActionResult> Details(int? id)
@@ -133,7 +126,7 @@ namespace Tally.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Home");
             }
             return View(course);
         }
@@ -165,7 +158,7 @@ namespace Tally.Controllers
             var course = await _context.Course.SingleOrDefaultAsync(m => m.CourseId == id);
             _context.Course.Remove(course);
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Home");
         }
 
         private bool CourseExists(int id)

@@ -23,13 +23,6 @@ namespace Tally.Controllers
             _userManager = userManager;
         }
 
-        // GET: Lectures
-        [Authorize]
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Lecture.ToListAsync());
-        }
-
         // GET: Lectures/Details/5
         [Authorize]
         public async Task<IActionResult> Details(int? id)
