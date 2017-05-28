@@ -10,5 +10,5 @@ Examples of student views:
 <br>
 Examples of professor views:
 <br>
-![Alt text](tally4.png?raw=true "Example 4")
 ![Alt text](tally5.png?raw=true "Example 5")
+![Alt text](tally6.png?raw=true "Example 6")
